@@ -6,87 +6,68 @@ var sendJsonResponse = function(res, status, content) {
 var mongoose = require('mongoose');
 var Loc = mongoose.model('Location');
 
-// calculate radians
-var theEarth = (function() {
-  var earthRadius = 6371; // km is 6371, miles is 3959
-    // miles to radians
-  var getDistanceFromRads = function(rads) {
-      console.log('radians = ' + rads * earthRadius);
-    return parseFloat(rads * earthRadius);
-  };
-    // radians to miles
-  var getRadsFromDistance = function(distance) {
-      console.log('miles = ' + distance / earthRadius);
-    return parseFloat(distance / earthRadius);
-  };
-
-  return {
-    getDistanceFromRads: getDistanceFromRads,
-    getRadsFromDistance: getRadsFromDistance
-  };
+// calculate kilometers
+var meterConversion = (function() {
+    var mToKm = function(distance) {
+        return parseFloat(distance / 1000);
+    };
+    var kmToM = function(distance) {
+        return parseFloat(distance * 1000);
+    };
+    return {
+        mToKm : mToKm,
+        kmToM : kmToM
+    };
 })();
-
-var buildLocationList = function(req, res, results, stats) {
-  var locations = [];
-  results.forEach(function(doc) {
-    locations.push({
-      distance: theEarth.getDistanceFromRads(doc.dis),
-      name: doc.obj.name,
-      address: doc.obj.address,
-      rating: doc.obj.rating,
-      facilities: doc.obj.facilities,
-      _id: doc.obj._id
-    });
-  });
-  console.log('locations: ' + locations);
-  return locations;
-};
 
 /* GET list of locations */
 module.exports.locationsListByDistance = function(req, res) {
-    // convert longitude to number
-  var lng = parseFloat(req.query.lng);
-  console.log('lng =' + lng);
-    // convert latitude to number
-  var lat = parseFloat(req.query.lat);
-  console.log('lat =' + lat);
-    // convert max distance to number
-  var maxDistance = parseFloat(req.query.maxDistance);
-  console.log('maxDistance =' + maxDistance);
-  // point parameter
-  var point = {
-    type: "Point",
-    coordinates: [lng, lat]
-  };
-  console.log('pont: ' + point.coordinates);
-  var geoOptions = {
-    spherical: true,
-    // max distance to radians
-    maxDistance: theEarth.getRadsFromDistance(maxDistance),
-    // max number of results
-    num: 10
-  };
-  console.log('geoOptions: ' + geoOptions.num);
-  if (!lng || !lat || !maxDistance) {
-    console.log('locationsListByDistance missing params');
-    sendJsonResponse(res, 404, {
-      "message": "lng, lat and maxDistance query parameters are all required"
-    });
-    return;
-  }
-  Loc.geoNear(point, geoOptions, function(err, results, stats) {
-    var locations;
-    console.log('Geo Results', results);
-    console.log('Geo stats', stats);
-    if (err) {
-      console.log('geoNear error:', err);
-      sendJsonResponse(res, 404, err);
-    } else {
-        // return results
-      locations = buildLocationList(req, res, results, stats);
-      sendJsonResponse(res, 200, locations);
+    var lng = parseFloat(req.query.lng);
+    var lat = parseFloat(req.query.lat);
+    var maxDistance = parseFloat(req.query.maxDistance);
+    if ((!lng && lng !== 0) || (!lat && lat !== 0) || !maxDistance) {
+        console.log('locationsListByDistance missing params');
+        sendJsonResponse(res, 404, {
+            "message" : "lng, lat and maxDistance query parameters are all required"
+        });
+        return;
     }
-  });
+    var point = {
+        type: "Point",
+        coordinates: [lng, lat]
+    };
+    var geoOptions =  {
+        spherical: true,
+        maxDistance: meterConversion.kmToM(maxDistance),
+        num: 10
+    };
+    Loc.geoNear(point, geoOptions, function(err, results, stats) {
+        var locations;
+        console.log('Geo Results', results);
+        console.log('Geo stats', stats);
+        if (err) {
+            console.log('geoNear error:', err);
+            sendJsonResponse(res, 404, err);
+        } else {
+            locations = buildLocationList(req, res, results, stats);
+            sendJsonResponse(res, 200, locations);
+        }
+    });
+};
+
+var buildLocationList = function(req, res, results, stats) {
+    var locations = [];
+    results.forEach(function(doc) {
+        locations.push({
+            distance: meterConversion.mToKm(doc.dis), 
+            name: doc.obj.name,
+            address: doc.obj.address,
+            rating: doc.obj.rating,
+            facilities: doc.obj.facilities,
+            _id: doc.obj._id
+        });
+    });
+    return locations;
 };
 
 module.exports.locationsCreate = function(req, res) {

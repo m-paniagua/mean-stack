@@ -1,5 +1,15 @@
-// GET home page
-module.exports.homelist = function(req, res) {
+var request = require("request");
+var apiOptions = {
+    // set server for cloud9
+    server: 'https://getting-mean-manuelpaniagua.c9users.io/'
+};
+
+if (process.env.NODE_ENV === 'production') {
+    // set server for heroku
+    apiOptions.server = 'https://thawing-mountain-83285.herokuapp.com/';
+}
+
+var renderHomePage = function(req, res, resBody) {
     res.render('locations-list', { 
         title: 'Loc8r - find a place to work with wifi',
         pageHeader: {
@@ -7,7 +17,8 @@ module.exports.homelist = function(req, res) {
             strapline: 'Find places to work with wifi near you!'
         },
         sidebar: "Looking for wifi and a seat? Loc8r helps you find places to work when out and about. Perhaps with coffee, cake or a pint?  Let Loc8r help you find the place you're looking for.",
-        locations: [{
+        locations: resBody
+        /*[{
             name: 'Starcups',
             address: '125 High Street, Reading, RG6 1PS',
             rating: 3,
@@ -25,7 +36,26 @@ module.exports.homelist = function(req, res) {
             rating: 2,
             facilities: ['Food', 'Premium wifi'],
             distance: '250m'
-        }]
+        }]*/
+    });
+}
+// GET home page
+module.exports.homelist = function(req, res) {
+    var requestOptions, path;
+    path = 'api/locations';
+    requestOptions = {
+        url: apiOptions.server + path,
+        method: 'GET',
+        json: {},
+        qs: {
+            lng: -118.457197,
+            lat: 34.264995,
+            maxDistance: 20
+        }
+    };
+    request(requestOptions, function(err, response, body) {
+        console.log(body);
+        renderHomePage(req, res, body);
     });
 };
 

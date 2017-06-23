@@ -8,13 +8,15 @@ var Loc = mongoose.model('Location');
 
 // calculate radians
 var theEarth = (function() {
-  var earthRadius = 3959; // km is 6371, miles is 3959
+  var earthRadius = 6371; // km is 6371, miles is 3959
     // miles to radians
   var getDistanceFromRads = function(rads) {
+      console.log('radians = ' + rads * earthRadius);
     return parseFloat(rads * earthRadius);
   };
     // radians to miles
   var getRadsFromDistance = function(distance) {
+      console.log('miles = ' + distance / earthRadius);
     return parseFloat(distance / earthRadius);
   };
 
@@ -24,19 +26,39 @@ var theEarth = (function() {
   };
 })();
 
+var buildLocationList = function(req, res, results, stats) {
+  var locations = [];
+  results.forEach(function(doc) {
+    locations.push({
+      distance: theEarth.getDistanceFromRads(doc.dis),
+      name: doc.obj.name,
+      address: doc.obj.address,
+      rating: doc.obj.rating,
+      facilities: doc.obj.facilities,
+      _id: doc.obj._id
+    });
+  });
+  console.log('locations: ' + locations);
+  return locations;
+};
+
 /* GET list of locations */
 module.exports.locationsListByDistance = function(req, res) {
     // convert longitude to number
   var lng = parseFloat(req.query.lng);
+  console.log('lng =' + lng);
     // convert latitude to number
   var lat = parseFloat(req.query.lat);
+  console.log('lat =' + lat);
     // convert max distance to number
   var maxDistance = parseFloat(req.query.maxDistance);
+  console.log('maxDistance =' + maxDistance);
   // point parameter
   var point = {
     type: "Point",
     coordinates: [lng, lat]
   };
+  console.log('pont: ' + point.coordinates);
   var geoOptions = {
     spherical: true,
     // max distance to radians
@@ -44,6 +66,7 @@ module.exports.locationsListByDistance = function(req, res) {
     // max number of results
     num: 10
   };
+  console.log('geoOptions: ' + geoOptions.num);
   if (!lng || !lat || !maxDistance) {
     console.log('locationsListByDistance missing params');
     sendJsonResponse(res, 404, {
@@ -64,21 +87,6 @@ module.exports.locationsListByDistance = function(req, res) {
       sendJsonResponse(res, 200, locations);
     }
   });
-};
-
-var buildLocationList = function(req, res, results, stats) {
-  var locations = [];
-  results.forEach(function(doc) {
-    locations.push({
-      distance: theEarth.getDistanceFromRads(doc.dis),
-      name: doc.obj.name,
-      address: doc.obj.address,
-      rating: doc.obj.rating,
-      facilities: doc.obj.facilities,
-      _id: doc.obj._id
-    });
-  });
-  return locations;
 };
 
 module.exports.locationsCreate = function(req, res) {

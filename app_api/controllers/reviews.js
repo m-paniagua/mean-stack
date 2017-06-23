@@ -132,10 +132,12 @@ module.exports.reviewsReadOne = function(req, res) {
 };
 
 module.exports.reviewsUpdateOne = function(req, res) {
+    // check locationid and review id provided
     if (!req.params.locationid || !req.params.reviewid) {
     sendJsonResponse(res, 404, {"message": "Not found, locationid and reviewid are both required"});
     return;
   }
+  // find location bu id and return review array
   Loc.findById(req.params.locationid).select('reviews').exec(function(err, location) {
         var thisReview;
         if (!location) {

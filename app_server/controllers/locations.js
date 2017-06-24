@@ -18,25 +18,6 @@ var renderHomePage = function(req, res, resBody) {
         },
         sidebar: "Looking for wifi and a seat? Loc8r helps you find places to work when out and about. Perhaps with coffee, cake or a pint?  Let Loc8r help you find the place you're looking for.",
         locations: resBody
-        /*[{
-            name: 'Starcups',
-            address: '125 High Street, Reading, RG6 1PS',
-            rating: 3,
-            facilities: ['Hot drinks', 'Food', 'Premium wifi'],
-            distance: '100m'
-        },{
-            name: 'Cafe Hero',
-            address: '125 High Street, Reading, RG6 1PS',
-            rating: 4,
-            facilities: ['Hot drinks', 'Food', 'Premium wifi'],
-            distance: '200m'
-        },{
-            name: 'Burger Queen',
-            address: '125 High Street, Reading, RG6 1PS',
-            rating: 2,
-            facilities: ['Food', 'Premium wifi'],
-            distance: '250m'
-        }]*/
     });
 }
 // GET home page
@@ -54,10 +35,29 @@ module.exports.homelist = function(req, res) {
         }
     };
     request(requestOptions, function(err, response, body) {
+        var i, data;
+        data = body;
         console.log(body);
+        for(i = 0; i < data.length; i++) {
+            data[i].distance = _formatDistance(data[i].distance);
+        }
         renderHomePage(req, res, body);
     });
 };
+
+var _formatDistance = function(distance) {
+    var numDistance, unit;
+    if(distance > 1) {
+        // round km to 1 decimal place
+        numDistance = parseFloat(distance).toFixed(1);
+        unit = 'km';
+    } else {
+        // if less than 1 km, display as meters
+        numDistance = parseInt(distance * 1000, 10);
+        unit ='m';
+    }
+    return numDistance + unit;
+}
 
 /* GET 'Location info' page */
 module.exports.locationInfo = function(req, res) {

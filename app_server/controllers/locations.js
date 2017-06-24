@@ -10,6 +10,15 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 var renderHomePage = function(req, res, resBody) {
+    var message;
+    if(!(resBody instanceof Array)) {
+        message = 'API lookup error';
+        resBody = [];
+    } else {
+        if(!resBody.length) {
+            message = 'No places found nearby';
+        }
+    }
     res.render('locations-list', { 
         title: 'Loc8r - find a place to work with wifi',
         pageHeader: {
@@ -17,7 +26,8 @@ var renderHomePage = function(req, res, resBody) {
             strapline: 'Find places to work with wifi near you!'
         },
         sidebar: "Looking for wifi and a seat? Loc8r helps you find places to work when out and about. Perhaps with coffee, cake or a pint?  Let Loc8r help you find the place you're looking for.",
-        locations: resBody
+        locations: resBody,
+        message: message
     });
 }
 // GET home page
@@ -37,31 +47,50 @@ module.exports.homelist = function(req, res) {
     request(requestOptions, function(err, response, body) {
         var i, data;
         data = body;
-        console.log(body);
-        for(i = 0; i < data.length; i++) {
-            data[i].distance = _formatDistance(data[i].distance);
+        // console.log(body);
+        if(response.statusCode === 200 && data.length) {
+            for(i = 0; i < data.length; i++) {
+                data[i].distance = _formatDistance(data[i].distance);
+            }
         }
+        
         renderHomePage(req, res, body);
     });
 };
 
+var _isNumeric = function(distance) {
+    return !isNaN(parseFloat(distance) && isFinite(distance));
+};
+
 var _formatDistance = function(distance) {
     var numDistance, unit;
-    if(distance > 1) {
-        // round km to 1 decimal place
-        numDistance = parseFloat(distance).toFixed(1);
-        unit = 'km';
+    if(distance && _isNumeric(distance)) {
+        if(distance > 1) {
+            // round km to 1 decimal place
+            numDistance = parseFloat(distance).toFixed(1);
+            unit = 'km';
+        } else {
+            // if less than 1 km, display as meters
+            numDistance = parseInt(distance * 1000, 10);
+            unit ='m';
+        }
+        return numDistance + unit;
     } else {
-        // if less than 1 km, display as meters
-        numDistance = parseInt(distance * 1000, 10);
-        unit ='m';
+        return '?';
     }
-    return numDistance + unit;
-}
+};
 
-/* GET 'Location info' page */
-module.exports.locationInfo = function(req, res) {
+var renderDetailPage = function(req, res, locDetail) {
     res.render('location-info', {
+        title: locDetail.name,
+        pageHeader: {title: locDetail.name},
+        sidebar: {
+            context: 'is on Loc8r because it has accessible wifi and space to sit down with your laptop and get some work done.',
+            callToAction: 'If you\'ve been and you like it - or if you don\'t - please leave a review to help other people just like you.'
+        },
+        location: locDetail
+    });
+    /*res.render('location-info', {
         title: 'Location info',
         pageHeader: {
             title: 'Starcups'
@@ -105,6 +134,25 @@ module.exports.locationInfo = function(req, res) {
                 reviewText: 'It was okay. Coffee wasn\'t great, but the wifi was fast.'
             }]
         }
+    });*/
+};
+
+/* GET 'Location info' page */
+module.exports.locationInfo = function(req, res){
+    var requestOptions, path;
+    path = "api/locations/" + req.params.locationid;
+    requestOptions = {
+        url : apiOptions.server + path,
+        method : "GET",
+        json : {}
+    };
+    request(requestOptions, function(err, response, body) {
+        var data = body;
+        data.coords = {
+            lng : body.coords[0],
+            lat : body.coords[1]
+        };
+        renderDetailPage(req, res, data);
     });
 };
 

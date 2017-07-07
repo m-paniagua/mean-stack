@@ -39,6 +39,7 @@ var doAddReview = function(req, res, location) {
             var thisReview;
             if(err) {
                 // if error updating
+                console.log(err);
                 sendJsonResponse(res, 400, err);
             } else {
                 // calculate new rating

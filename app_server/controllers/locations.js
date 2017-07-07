@@ -143,8 +143,8 @@ var renderReviewForm = function(req, res, locDetail) {
         title: 'Add review',
         pageHeader: {
             title: 'Review' + locDetail.name
-        }
-        
+        },
+        error: req.query.err
     });
 };
 
@@ -174,12 +174,18 @@ module.exports.doAddReview = function(req, res) {
         json: postdata
     };
     // make request
-    request(requestOptions, function(err, response, body) {
-        if(response.statusCode === 201) {
-            res.redirect('/location/' + locationid);
-        }
-        else {
-            _showError(req, res, response.statusCode);
-        }
-    });
+    if(!postdata.author || !postdata.rating || !postdata.reviewText) {
+        res.redirect('/location/' + locationid + '/review/new?err=val');
+    } else {
+        request(requestOptions, function(err, response, body) {
+            if(response.statusCode === 201) {
+                res.redirect('/location/' + locationid);
+            } else if (response.statusCode === 400 && body.name && body.name === "ValidationError"){
+                res.redirect('/location/' + locationid + '/review/new?err=val');
+            } else {
+                _showError(req, res, response.statusCode);
+            }
+        });
+    }
+    
 };

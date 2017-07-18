@@ -1,5 +1,5 @@
 doctype html
-html
+html(ng-app='loc8rApp')
   head
     title= title
     link(rel='stylesheet', href='/bootstrap/css/amelia.bootstrap.css')
@@ -23,7 +23,8 @@ html
         .row
           .col-xs-12
             small &copy; Manuel Paniagua 2017
+  script(src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js")
+  script(src='/angular/loc8rApp.js')
   script(src='/bootstrap/jquery-3.1.1.js')
   script(src='/bootstrap/js/bootstrap.min.js')
   script(src='/javascripts/validation.js')
-  

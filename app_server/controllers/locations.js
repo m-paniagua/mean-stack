@@ -9,8 +9,8 @@ if (process.env.NODE_ENV === 'production') {
     apiOptions.server = 'https://thawing-mountain-83285.herokuapp.com/';
 }
 
-var renderHomePage = function(req, res, resBody) {
-    var message;
+var renderHomePage = function(req, res) {
+    /*var message;
     if(!(resBody instanceof Array)) {
         message = 'API lookup error';
         resBody = [];
@@ -18,7 +18,7 @@ var renderHomePage = function(req, res, resBody) {
         if(!resBody.length) {
             message = 'No places found nearby';
         }
-    }
+    }*/
     res.render('locations-list', { 
         title: 'Loc8r - find a place to work with wifi',
         pageHeader: {
@@ -26,13 +26,13 @@ var renderHomePage = function(req, res, resBody) {
             strapline: 'Find places to work with wifi near you!'
         },
         sidebar: "Looking for wifi and a seat? Loc8r helps you find places to work when out and about. Perhaps with coffee, cake or a pint?  Let Loc8r help you find the place you're looking for.",
-        locations: resBody,
-        message: message
+        /*locations: resBody,
+        message: message*/
     });
 }
 // GET home page
 module.exports.homelist = function(req, res) {
-    var requestOptions, path;
+    /*var requestOptions, path;
     path = 'api/locations';
     requestOptions = {
         url: apiOptions.server + path,
@@ -55,7 +55,8 @@ module.exports.homelist = function(req, res) {
         }
         
         renderHomePage(req, res, body);
-    });
+    });*/
+    renderHomePage(req, res);
 };
 
 var _isNumeric = function(distance) {

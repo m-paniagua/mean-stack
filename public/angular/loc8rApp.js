@@ -17,7 +17,7 @@ var locationListCtrl = function($scope, loc8rData, geolocation) {
             $scope.message = "Sorry, something's gone wrong ";
             console.log(e);
         });
-    }
+    };
     
     $scope.showError = function(error) {
         $scope.$apply(function() {
@@ -73,6 +73,9 @@ var loc8rData = function ($http) {
     var locationByCoords = function (lat, lng) {
         return $http.get('/api/locations?lng=' + lng + '&lat=' + lat + '&maxDistance=15');
     };
+    
+    
+    
     return {
         locationByCoords : locationByCoords
     };

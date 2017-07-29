@@ -5,12 +5,13 @@ var ctrlOthers = require("../controllers/others");
 
 // Locations pages
 /* GET home page. */
-router.get('/', ctrlLocations.homelist);
-router.get('/location/:locationid', ctrlLocations.locationInfo);
+router.get('/', ctrlOthers.angularApp);
+
+/*router.get('/location/:locationid', ctrlLocations.locationInfo);
 router.get('/location/:locationid/review/new', ctrlLocations.addReview);
-router.post('/location/:locationid/review/new', ctrlLocations.doAddReview);
+router.post('/location/:locationid/review/new', ctrlLocations.doAddReview);*/
 
 // other pages
-router.get('/about', ctrlOthers.about);
+// router.get('/about', ctrlOthers.about);
 
 module.exports = router;

@@ -17,8 +17,14 @@
          vm.message = "Checking your location";
         
         vm.getData = function(position) {
-            var lat = position.coords.latitude;
-            var lng = position.coords.longitude;
+            // get coords from location service
+            // var lat = position.coords.latitude;
+            // var lng = position.coords.longitude;
+            
+            // default location to mission hills
+            var lat = 34.264995;
+            var lng = -118.457197;
+            
             vm.message = "Searching for nearby locations";
             loc8rData.locationByCoords(lat, lng)
             .then(function (data) {

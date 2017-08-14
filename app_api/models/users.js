@@ -21,12 +21,12 @@ userSchema.methods.setPassword = function(password) {
     // generate random string
     this.salt = crypto.randomBytes(16).toString('hex');
     // encrypt password
-    this.hash = crypto.pbkdf2(password, this.salt, 1000, 64).toString('hex');
+    this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
 };
 
 // validate log in
 userSchema.methods.validPassword = function(password) {
-    var hash = crypto.pbkdf2(password, this.salt, 1000, 64).toString('hex');
+    var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
     return this.hash === hash;
 };
 
@@ -46,3 +46,5 @@ userSchema.methods.generateJWT = function() {
         exp: parseInt(expiry.getTime() / 1000)
     }, process.env.JWT_SECRET);  // send secret for hashing algo
 };
+
+mongoose.model('User', userSchema);

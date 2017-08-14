@@ -5,32 +5,64 @@ var sendJsonResponse = function(res, status, content) {
 
 var mongoose = require('mongoose');
 var Loc = mongoose.model('Location');
+var User = mongoose.model('User');
 
 module.exports.reviewsCreate = function(req, res) {
     // set locationid
-    var locationid = req.params.locationid;
-    if(locationid) {
+    // var locationid = req.params.locationid;
+    getAuthor(req, res, function(req, res, userName) {
+        if(req.params.locationid) {
         // find location, only return reviews array
-        Loc.findById(locationid).select('reviews').exec(function(err, location) {
+        Loc.findById(req.params.locationid).select('reviews').exec(function(err, location) {
             if(err) {
                 // if theres an error
                 sendJsonResponse(res, 400, err);
             } else {
                 // add new review
-                doAddReview(req, res, location);
+                doAddReview(req, res, location, userName);
             }
-        })
-    };
+        });
+    }
+    });
 };
 
-var doAddReview = function(req, res, location) {
+var getAuthor = function(req, res, callback) {
+  console.log("Finding author with email " + req.payload.email);
+  if (req.payload.email) {
+    User
+      .findOne({ email : req.payload.email })
+      .exec(function(err, user) {
+        if (!user) {
+          sendJsonResponse(res, 404, {
+            "message": "User not found"
+          });
+          return;
+        } else if (err) {
+          console.log(err);
+          sendJsonResponse(res, 404, err);
+          return;
+        }
+        console.log(user);
+        callback(req, res, user.name);
+      });
+
+  } else {
+    sendJsonResponse(res, 404, {
+      "message": "User not found"
+    });
+    return;
+  }
+
+};
+
+var doAddReview = function(req, res, location, author) {
     if(!location) {
         // if no location is found
         sendJsonResponse(res, 404, {'message': 'locationid not found'});
     } else {
         // push to reviews array
         location.reviews.push({
-            author: req.body.author,
+            author: author,
             rating: req.body.rating,
             reviewText: req.body.reviewText
         });

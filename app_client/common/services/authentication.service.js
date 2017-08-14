@@ -17,7 +17,7 @@
 
     var isLoggedIn = function() {
       var token = getToken();
-
+      console.log('this is the token: ' + token);
       if(token){
         var payload = JSON.parse($window.atob(token.split('.')[1]));
 
@@ -30,7 +30,9 @@
     var currentUser = function() {
       if(isLoggedIn()){
         var token = getToken();
+        
         var payload = JSON.parse($window.atob(token.split('.')[1]));
+        console.log('this is the payload: ' + payload);
         return {
           email : payload.email,
           name : payload.name
@@ -39,13 +41,13 @@
     };
 
     register = function(user) {
-      return $http.post('/api/register', user).success(function(data){
+      return $http.post('/api/register', user).then(function(data){
         saveToken(data.token);
       });
     };
 
     login = function(user) {
-      return $http.post('/api/login', user).success(function(data) {
+      return $http.post('/api/login', user).then(function(data) {
         saveToken(data.token);
       });
     };

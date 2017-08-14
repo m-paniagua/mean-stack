@@ -24,6 +24,11 @@
             controller: 'registerCtrl',
             controllerAs: 'vm'
         })
+        .when('/login', {
+            templateUrl: '/auth/login/login.view.html',
+            controller: 'loginCtrl',
+            controllerAs: 'vm'
+        })
         .otherwise({
             redirectTo: '/'
         });
@@ -32,5 +37,5 @@
     
     angular
         .module('loc8rApp')
-        .config(['$routeProvider', config]);
+        .config(['$routeProvider', '$locationProvider', config]);
 })();

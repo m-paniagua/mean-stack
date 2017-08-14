@@ -26,19 +26,21 @@ app.set('view engine', 'jade');
 var appClientFiles = {
   'app_client/app.js': fs.readFileSync("app_client/app.js", "utf8"),
   'app_client/home/home.controller.js': fs.readFileSync("app_client/home/home.controller.js", "utf8"),
-  'app_client/common/services/geolocation.service.js': fs.readFileSync("app_client/common/services/geolocation.service.js", "utf8"),
-  'app_client/common/services/loc8rData.service.js': fs.readFileSync("app_client/common/services/loc8rData.service.js", "utf8"),
-  'app_client/common/filters/formatDistance.filter.js': fs.readFileSync("app_client/common/filters/formatDistance.filter.js", "utf8"),
-  'app_client/common/directives/ratingStars/ratingStars.directive.js': fs.readFileSync("app_client/common/directives/ratingStars/ratingStars.directive.js", "utf8"),
-  'app_client/common/directives/footerGeneric/footerGeneric.directive.js': fs.readFileSync("app_client/common/directives/footerGeneric/footerGeneric.directive.js", "utf8"),
-  'app_client/common/directives/navigation/navigation.directive.js': fs.readFileSync("app_client/common/directives/navigation/navigation.directive.js", "utf8"),
-  'app_client/common/directives/pageHeader/pageHeader.directive.js': fs.readFileSync("app_client/common/directives/pageHeader/pageHeader.directive.js", "utf8"),
   'app_client/about/about.controller.js': fs.readFileSync("app_client/about/about.controller.js", "utf8"),
-  'app_client/common/filters/addHtmlLineBreaks.filter.js': fs.readFileSync("app_client/common/filters/addHtmlLineBreaks.filter.js", "utf8"),
+  'app_client/auth/login/login.controller.js': fs.readFileSync("app_client/auth/login/login.controller.js", "utf8"),
+  'app_client/auth/register/register.controller.js': fs.readFileSync("app_client/auth/register/register.controller.js", "utf8"),
   'app_client/locationDetail/locationDetail.controller.js': fs.readFileSync("app_client/locationDetail/locationDetail.controller.js", "utf8"),
   'app_client/reviewModal/reviewModal.controller.js': fs.readFileSync("app_client/reviewModal/reviewModal.controller.js", "utf8"),
   'app_client/common/services/authentication.service.js': fs.readFileSync("app_client/common/services/authentication.service.js", "utf8"),
-  'app_client/auth/register/register.controller.js': fs.readFileSync("app_client/auth/register/register.controller.js", "utf8")
+  'app_client/common/services/geolocation.service.js': fs.readFileSync("app_client/common/services/geolocation.service.js", "utf8"),
+  'app_client/common/services/loc8rData.service.js': fs.readFileSync("app_client/common/services/loc8rData.service.js", "utf8"),
+  'app_client/common/filters/formatDistance.filter.js': fs.readFileSync("app_client/common/filters/formatDistance.filter.js", "utf8"),
+  'app_client/common/filters/addHtmlLineBreaks.filter.js': fs.readFileSync("app_client/common/filters/addHtmlLineBreaks.filter.js", "utf8"),
+  'app_client/common/directives/navigation/navigation.controller.js': fs.readFileSync("app_client/common/directives/navigation/navigation.controller.js", "utf8"),
+  'app_client/common/directives/navigation/navigation.directive.js': fs.readFileSync("app_client/common/directives/navigation/navigation.directive.js", "utf8"),
+  'app_client/common/directives/footerGeneric/footerGeneric.directive.js': fs.readFileSync("app_client/common/directives/footerGeneric/footerGeneric.directive.js", "utf8"),
+  'app_client/common/directives/pageHeader/pageHeader.directive.js': fs.readFileSync("app_client/common/directives/pageHeader/pageHeader.directive.js", "utf8"),
+  'app_client/common/directives/ratingStars/ratingStars.directive.js': fs.readFileSync("app_client/common/directives/ratingStars/ratingStars.directive.js", "utf8")
 };
 // run uglifyJs
 var uglified = uglifyJs.minify(appClientFiles, { compress : false });
